@@ -1,34 +1,29 @@
 package com.voxloud.provisioning.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
-public class Device {
+@Table(name = "device")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Device extends Auditable {
 
     @Id
-    @Column(name = "mac_address")
+    @Column(name = "mac_address", nullable = false, length = 17)
     private String macAddress;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DeviceModel model;
+    private DeviceType model;
 
-    @Column(name = "override_fragment")
-    private String overrideFragment;
-
+    @Column(nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String password;
-
-    public enum DeviceModel {
-        CONFERENCE,
-        DESK
-    }
 }
