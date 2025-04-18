@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -103,5 +105,20 @@ class ProvisioningControllerTest {
     void whenGetUnknownMac_thenReturnsNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/provisioning/{mac}", "00:11:22:33:44:55"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getDevice_withUnchangedEtag_returns304() throws Exception {
+        MvcResult first = mockMvc.perform(get("/api/v1/provisioning/{mac}", deskDevice.getMacAddress()))
+                .andExpect(header()
+                        .exists(HttpHeaders.ETAG))
+                .andReturn();
+        String etag = first.getResponse().getHeader(HttpHeaders.ETAG);
+        // second call with If-None-Match should yield 304
+        mockMvc.perform(get("/api/v1/provisioning/{mac}", deskDevice.getMacAddress())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.IF_NONE_MATCH, etag))
+                .andExpect(status().isNotModified())
+                .andExpect(content().string(""));
     }
 }
