@@ -125,3 +125,37 @@ These are the steps:
 3. You share the (public) repository link with the reviewer when development is completed
 
 Note: The system will be tested by the reviewer on the sample data by running `results.sh`
+
+## Candidate Notes
+### Getting Started & Prerequisites
+* Java: 8+
+* Build Tool: Maven
+* Database: H2 embedded (no external DB required)
+```text
+# Build
+mvn clean install
+
+# Run
+mvn spring-boot:run
+```
+
+### API Documentation
+* Swagger UI: http://localhost:8080/swagger-ui.html
+* OpenAPI spec: http://localhost:8080/v3/api-docs
+  
+### Key Design Highlights
+* Separation of Concerns: Layers for Controllers → Services → Repositories → Formatters.
+* Override Fragment Strategy: One‑to‑one today, easily extensible to one‑to‑many.
+* Content Negotiation: Provisioning endpoint supports text/plain and application/json.
+* ETag Support.
+
+### Future Roadmap
+* List & Filter: GET /api/v1/devices with pagination and filtering.
+* Partial Updates: PATCH endpoints for devices and override fragments.
+* Bulk Operations: Batch create/delete for large fleets.
+* Security: OAuth2, API‑Key authentication, role‑based authorization.
+* Monitoring: Spring Boot Actuator, Prometheus/Grafana integration.
+
+### Notes & Assumptions
+* MAC addresses are case‑insensitive (always stored upper‑case).
+* Payloads are relatively small; version/timestamp‑based ETags recommended for large responses.
