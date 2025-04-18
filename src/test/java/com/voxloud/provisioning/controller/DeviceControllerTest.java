@@ -6,6 +6,7 @@ import com.voxloud.provisioning.repository.DeviceRepository;
 import com.voxloud.provisioning.repository.OverrideFragmentRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -93,4 +95,32 @@ class DeviceControllerTest {
                 .andExpect(status().isUnsupportedMediaType());
     }
 
+    @Test
+    @DisplayName("DELETE /api/v1/devices/{mac} for existing device → 204 No Content and removed")
+    void deleteExistingDevice_returns204AndRemoves() throws Exception {
+        // 1) Seed a device
+        deviceRepo.save(Device.builder()
+                .macAddress(macAddress)
+                .model(DeviceType.DESK)
+                .username("alice")
+                .password("secret")
+                .build());
+
+        // 2) Perform DELETE
+        mockMvc.perform(delete("/api/v1/devices/{mac}", macAddress))
+                .andExpect(status().isNoContent());
+
+        // 3) Assert it’s gone
+        assertThat(deviceRepo.findById(macAddress)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/devices/{mac} for missing device → 404 Not Found")
+    void deleteNonExistingDevice_returns404() throws Exception {
+        // no seeding
+
+        mockMvc.perform(delete("/api/v1/devices/{mac}", macAddress))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("No device with MAC")));
+    }
 }

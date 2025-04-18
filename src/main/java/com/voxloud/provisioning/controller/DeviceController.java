@@ -5,10 +5,7 @@ import com.voxloud.provisioning.service.DeviceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -35,5 +32,11 @@ class DeviceController {
                         .buildAndExpand(dto.getMacAddress().toUpperCase())
                         .toUri()
         ).build();
+    }
+
+    @DeleteMapping("/{mac}")
+    public ResponseEntity<Void> deleteDevice(@PathVariable String mac) {
+        deviceService.deleteDevice(mac);
+        return ResponseEntity.noContent().build();
     }
 }
