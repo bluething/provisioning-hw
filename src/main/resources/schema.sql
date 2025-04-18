@@ -18,4 +18,5 @@ CREATE TABLE override_fragment (
   CONSTRAINT fk_device
     FOREIGN KEY (device_mac)
     REFERENCES device(mac_address)
+    ON DELETE CASCADE
 );
