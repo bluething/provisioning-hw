@@ -33,4 +33,14 @@ class GlobalExceptionHandler {
                 .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(msg);
     }
+
+    @ExceptionHandler(OverrideTypeConflictException.class)
+    public ResponseEntity<String> handleTypeConflict(OverrideTypeConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(OverrideNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(OverrideNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
