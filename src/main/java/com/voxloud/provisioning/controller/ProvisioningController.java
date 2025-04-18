@@ -1,11 +1,30 @@
 package com.voxloud.provisioning.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.voxloud.provisioning.service.ProvisioningService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/provisioning")
+@RequiredArgsConstructor
 public class ProvisioningController {
 
-    // TODO Implement controller method
+    private final ProvisioningService service;
+
+    @GetMapping(
+            path = "/{mac}",
+            produces = {
+                    MediaType.TEXT_PLAIN_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE
+            }
+    )
+    public ResponseEntity<String> getConfig(@PathVariable String mac) throws IOException {
+        String body = service.getProvisioningFile(mac);
+        return ResponseEntity.ok()
+                .body(body);
+    }
 }
